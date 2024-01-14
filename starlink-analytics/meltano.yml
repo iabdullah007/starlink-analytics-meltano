@@ -1,0 +1,47 @@
+version: 1
+default_environment: dev
+project_id: c2b7a187-5c59-439d-b164-910f3a7af471
+environments:
+- name: dev
+- name: staging
+- name: prod
+plugins:
+  extractors:
+  - name: tap-spacexapi
+    namespace: tap_spacexapi
+    pip_url: -e ./tap-spacexapi
+    executable: tap-spacexapi
+  loaders:
+  - name: target-postgres
+    variant: meltanolabs
+    pip_url: meltanolabs-target-postgres
+    config:
+      add_record_metadata: false
+      host: $POSTGRES_HOST
+      port: $POSTGRES_PORT
+      user: $POSTGRES_USER
+      database: $POSTGRES_DB
+      password: $POSTGRES_PASSWORD
+  orchestrators:
+  - name: airflow
+    variant: apache
+    pip_url: psycopg2 apache-airflow==2.1.2 --constraint https://raw.githubusercontent.com/apache/airflow/constraints-2.1.2/constraints-${MELTANO__PYTHON_VERSION}.txt
+    config:
+      core:
+        dags_folder: $AIRFLOW_HOME/dags
+        sql_alchemy_conn: $AIRFLOW__CORE__SQL_ALCHEMY_CONN
+  files:
+  - name: files-airflow
+    variant: meltano
+    pip_url: git+https://github.com/meltano/files-airflow.git
+  utilities:
+  - name: dbt-postgres
+    variant: dbt-labs
+    pip_url: dbt-core~=1.5.2 dbt-postgres~=1.5.2 git+https://github.com/meltano/dbt-ext.git@main
+    config:
+      host: $POSTGRES_HOST
+      port: $POSTGRES_PORT
+      user: $POSTGRES_USER
+      dbname: $POSTGRES_DB
+      password: $POSTGRES_PASSWORD
+      schema: analytics

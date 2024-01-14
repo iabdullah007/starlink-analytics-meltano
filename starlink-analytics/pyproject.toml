@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "data-challenge"
+version = "0.1.0"
+description = ""
+authors = ["Abdullah Tariq <abdullah.tariq@protonmail.ch>"]
+readme = "README.md"
+packages = [{include = "data_challenge"}]
+
+[tool.poetry.dependencies]
+python = "3.8"
+meltano = "2.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

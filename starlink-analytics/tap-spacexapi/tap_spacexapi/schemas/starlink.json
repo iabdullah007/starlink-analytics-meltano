@@ -1,0 +1,35 @@
+{
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "string"
+        },
+        "version": {
+            "type": ["string", "null"]
+        },
+        "launch": {
+            "type": ["string", "null"]
+        },
+        "spaceTrack": {
+            "type": "object",
+            "properties": {
+                "CREATION_DATE": {
+                    "type": "string"
+                },
+                "OBJECT_ID": {
+                    "type": "string"
+                },
+                "OBJECT_NAME": {
+                    "type": "string"
+                },
+                "OBJECT_TYPE": {
+                    "type": "string"
+                },
+                "LAUNCH_DATE": {
+                    "type": ["string", "null"]
+                }
+            }
+        }
+    },
+    "required": ["id"]
+}

@@ -1,0 +1,9 @@
+
+# .gitignore
+/venv
+/.meltano
+/.pytest_cache
+/.env
+
+
+# transform/.gitignore

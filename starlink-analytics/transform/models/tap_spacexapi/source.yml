@@ -1,0 +1,8 @@
+version: 2
+sources:
+  - name: tap_spacexapi     # the name we want to reference this source by
+    database: meltano
+    schema: tap_spacexapi   # the schema the raw data was loaded into
+    tables:
+      - name: launches
+      - name: starlink

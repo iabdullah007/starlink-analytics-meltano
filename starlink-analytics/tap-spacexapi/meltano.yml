@@ -1,0 +1,17 @@
+version: 1
+send_anonymous_usage_stats: true
+project_id: "tap-spacexapi"
+default_environment: test
+environments:
+- name: test
+plugins:
+  extractors:
+  - name: "tap-spacexapi"
+    namespace: "tap_spacexapi"
+    pip_url: -e .
+    capabilities:
+    - state
+    - catalog
+    - discover
+    - about
+    - stream-maps

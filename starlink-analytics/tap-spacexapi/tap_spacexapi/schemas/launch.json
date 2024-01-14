@@ -1,0 +1,163 @@
+{
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "string"
+        },
+        "flight_number": {
+            "type": "number"
+        },
+        "name": {
+            "type": "string"
+        },
+        "date_utc": {
+            "type": "string"
+        },
+        "date_unix": {
+            "type": "number"
+        },
+        "date_local": {
+            "type": "string"
+        },
+        "date_precision": {
+            "type": "string",
+            "enum": [
+                "half",
+                "quarter",
+                "year",
+                "month",
+                "day",
+                "hour"
+            ]
+        },
+        "static_fire_date_utc": {
+            "type": ["string", "null"]
+        },
+        "static_fire_date_unix": {
+            "type": ["number", "null"]
+        },
+        "net": {
+            "type": ["boolean", "false"]
+        },
+        "window": {
+            "type": ["number", "null"]
+        },
+        "rocket": {
+            "type": ["string", "null"]
+        },
+        "success": {
+            "type": ["boolean", "null"]
+        },
+        "failures": {
+            "type": ["array", "null"],
+            "items": {
+                "type": "object",
+                "properties": {
+                    "time": {
+                        "type": ["number", "null"]
+                    },
+                    "altitude": {
+                        "type": ["number", "null"]
+                    },
+                    "reason": {
+                        "type": ["string", "null"]
+                    }
+                }
+            }
+        },
+        "upcoming": {
+            "type": "boolean"
+        },
+        "details": {
+            "type": ["string", "null"]
+        },
+        "fairings": {
+            "type": ["object", "null"],
+            "properties": {
+                "reused": {
+                    "type": ["boolean", "null"]
+                },
+                "recovery_attempt": {
+                    "type": ["boolean", "null"]
+                },
+                "recovered": {
+                    "type": ["boolean", "null"]
+                },
+                "ships": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "ships": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "capsules": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "payloads": {
+            "type": "array",
+            "items": {
+                "type": "string"
+            }
+        },
+        "launchpad": {
+            "type": ["string", "null"]
+        },
+        "cores": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "core": {
+                        "type": ["string", "null"]
+                    },
+                    "flight": {
+                        "type": ["number", "null"]
+                    },
+                    "gridfins": {
+                        "type": ["boolean", "null"]
+                    },
+                    "legs": {
+                        "type": ["boolean", "null"]
+                    },
+                    "reused": {
+                        "type": ["boolean", "null"]
+                    },
+                    "landing_attempt": {
+                        "type": ["boolean", "null"]
+                    },
+                    "landing_success": {
+                        "type": ["boolean", "null"]
+                    },
+                    "landing_type": {
+                        "type": ["string", "null"]
+                    },
+                    "landpad": {
+                        "type": ["string", "null"]
+                    }
+                }
+            }
+        },
+        "auto_update": {
+            "type": ["boolean", "null"]
+        }
+    },
+    "required": [
+        "flight_number",
+        "name",
+        "date_utc",
+        "date_unix",
+        "date_local",
+        "date_precision",
+        "upcoming"
+    ]
+}

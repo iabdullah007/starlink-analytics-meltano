@@ -1,0 +1,139 @@
+version: '3.8'
+
+x-meltano-image: &meltano-image
+  image: starlink-analytics:dev
+  build: .
+
+x-meltano-env: &meltano-env
+  MELTANO_PROJECT_ROOT: /projects/
+  MELTANO_DATABASE_URI: postgresql+psycopg2://postgres:postgres@meltano-system-db/meltano
+  POSTGRES_DB: meltano
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: postgres
+  POSTGRES_HOST: meltano-system-db
+  POSTGRES_PORT: 5432
+  # Add any additional Meltano configuration environment variables here
+
+x-airflow-env: &airflow-env
+  AIRFLOW_HOME: /projects/orchestrate
+  AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://postgres:postgres@airflow-metadata-db/airflow
+  AIRFLOW__CORE__FERNET_KEY: FB0o_zt4e3Ziq3LdUUO7F2Z95cvFFx16hU8jTeR1ASM=
+  AIRFLOW__CORE__EXECUTOR: LocalExecutor
+  AIRFLOW__CORE__LOGGING_LEVEL: INFO
+
+services:
+  meltano-ui:
+    <<: *meltano-image
+    command: ui
+    environment:
+      <<: [*meltano-env, *airflow-env]
+    volumes:
+      - meltano_elt_logs_data:/.meltano/logs/elt
+    expose:
+      - 5000
+    ports:
+      - 8090:5000
+    depends_on:
+      - meltano-system-db
+    networks:
+      - meltano
+    restart: on-failure
+
+  meltano-system-db:
+    image: postgres
+    container_name: meltano-system-db
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: meltano
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - meltano_postgresql_data:/var/lib/postgresql/data
+    expose:
+      - 5432
+    networks:
+      - meltano
+    restart: on-failure
+
+  airflow-scheduler:
+    <<: *meltano-image
+    command: invoke airflow scheduler
+    container_name: airflow-scheduler
+    environment:
+      <<: [*meltano-env, *airflow-env]
+    volumes:
+      - meltano_elt_logs_data:/.meltano/logs/elt
+    expose:
+      - 8793
+    depends_on:
+      - meltano-system-db
+      - airflow-metadata-db
+    networks:
+      - meltano
+      - airflow
+    restart: on-failure
+  
+  airflow-webserver:
+    <<: *meltano-image
+    command: invoke airflow webserver
+    container_name: airflow-webserver
+    environment:
+      <<: [*meltano-env, *airflow-env]
+    expose:
+      - 8080
+    ports:
+      - 8080:8080
+    depends_on:
+      - meltano-system-db
+      - airflow-metadata-db
+    networks:
+      - meltano
+      - airflow
+    restart: on-failure
+  
+  airflow-init:
+    <<: *meltano-image
+    environment:
+      <<: [*meltano-env, *airflow-env]
+    entrypoint: bash
+    command:
+      - -c
+      - |
+        meltano invoke airflow db init
+        meltano invoke airflow users create  --role Admin --username airflow --password airflow --email airflow@airflow.com --firstname airflow --lastname airflow
+    depends_on:
+      - meltano-system-db
+      - airflow-metadata-db
+      - airflow-webserver
+    networks:
+      - meltano
+      - airflow
+    restart: on-failure
+  
+  airflow-metadata-db:
+    image: postgres
+    container_name: airflow-metadata-db
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: airflow
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - airflow_postgresql_data:/var/lib/postgresql/data
+    expose:
+      - 5432
+    networks:
+      - airflow
+    restart: on-failure
+
+networks:
+  meltano:
+  airflow:
+
+volumes:
+  meltano_postgresql_data:
+    driver: local
+  meltano_elt_logs_data:
+    driver: local
+  airflow_postgresql_data:
+    driver: local
